@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nosso Álbum Fofinho 🩷</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background: #fdfbf7; /* Fundo bege manteiga aconchegante */
+            font-family: 'Quicksand', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 15px 50px 15px;
+            overflow-x: hidden;
+            background-image: radial-gradient(#e6dfd5 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+        }
+
+        .header-decor {
+            font-size: 1.4rem;
+            letter-spacing: 4px;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 3rem;
+            color: #d81b60;
+            text-align: center;
+            margin-bottom: 2px;
+            text-shadow: 2px 2px 0px #fae1dd;
+        }
+
+        p.subtitle {
+            font-size: 0.85rem;
+            color: #ad1457;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        /* Botão Adicionar Fofinho */
+        .add-btn {
+            background: linear-gradient(135deg, #ff85a2, #ff5c8a);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 93, 138, 0.4);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.1s;
+        }
+
+        .add-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Mural / Container de Polaroids */
+        .polaroid-board {
+            display: flex;
+            flex-direction: column;
+            gap: 35px;
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .polaroid-container {
+            perspective: 1000px;
+            width: 100%;
+            height: 420px;
+        }
+
+        .polaroid-card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .polaroid-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .polaroid-front, .polaroid-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: #ffffff;
+            padding: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            border: 2px solid #fae1dd;
+        }
+
+        /* Fita adesiva estilo selo no topo */
+        .polaroid-front::before, .polaroid-back::before {
+            content: '🎀 ✨ 🩷 ✨ 🎀';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            background: #fff9fa;
+            padding: 2px 10px;
+            border: 1px dashed #ffb6c1;
+            border-radius: 10px;
+            z-index: 2;
+            letter-spacing: 2px;
+        }
+
+        .polaroid-back {
+            transform: rotateY(180deg);
+            background: #fff9fa;
+            justify-content: center;
+            text-align: center;
+            padding: 25px;
+        }
+
+        /* Seletor de Cores da Polaroid */
+        .color-picker-bar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 5px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .color-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid rgba(0,0,0,0.1);
+            transition: transform 0.1s;
+        }
+
+        .color-dot:active {
+            transform: scale(1.2);
+        }
+
+        .photo-frame {
+            width: 100%;
+            height: 220px;
+            background: #ffe6eb;
+            overflow: hidden;
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px dashed #ffb6c1;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .camera-icon-overlay {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: #d81b60;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            font-weight: 700;
+        }
+
+        .caption-input {
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
+            color: #d81b60;
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            outline: none;
+            margin-top: 2px;
+        }
+
+        .caption-input::placeholder {
+            color: #ffb6c1;
+        }
+
+        .back-text {
+            font-family: 'Caveat', cursive;
+            font-size: 1.8rem;
+            color: #d81b60;
+            line-height: 1.4;
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            resize: none;
+            outline: none;
+        }
+
+        .back-text::placeholder {
+            color: #ffb6c1;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-top: 2px;
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .action-btn {
+            background: #ffe6eb;
+            border: 1px solid #ffb6c1;
+            color: #d81b60;
+            padding: 6px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #ff5c8a;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* Adesivos flutuantes pelos cantos da tela */
+        .sticker-decor {
+            position: fixed;
+            font-size: 1.8rem;
+            pointer-events: none;
+            z-index: 99;
+            opacity: 0.85;
+            animation: floatSticker 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatSticker {
+            from { transform: translateY(0px) rotate(0deg); }
+            to { transform: translateY(-8px) rotate(6deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Adesivos decorativos flutuantes -->
+    <div class="sticker-decor" style="top: 15px; left: 12px;">🦄</div>
+    <div class="sticker-decor" style="top: 70px; right: 15px;">🍀</div>
+    <div class="sticker-decor" style="bottom: 30px; left: 15px;">🪷</div>
+    <div class="sticker-decor" style="bottom: 90px; right: 15px;">🍓</div>
+
+    <div class="header-decor">🍥 ✨ 🎀 🩷 ✨ 🍥</div>
+    <h1>Your Album 🌸</h1>
+    <p class="subtitle">Tudo fica salvo no celular automaticamente! 🩷</p>
+
+    <button class="add-btn" onclick="addNewPolaroid()">
+        ✨ Adicionar Nova Foto 🩷
+    </button>
+
+    <div class="polaroid-board" id="polaroidBoard"></div>
+
+    <script>
+        let polaroids = JSON.parse(localStorage.getItem('polaroids_data_bege')) || [
+            {
+                id: 1,
+                color: '#ffffff',
+                img: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=500&q=80',
+                caption: 'Nosso momento especial ✨',
+                backText: '"Desde o primeiro dia, minha vida ficou muito mais feliz com você 🩷"'
+            }
+        ];
+
+        function saveToStorage() {
+            localStorage.setItem('polaroids_data_bege', JSON.stringify(polaroids));
+        }
+
+        function renderBoard() {
+            const board = document.getElementById('polaroidBoard');
+            board.innerHTML = '';
+
+            polaroids.forEach((item) => {
+                const container = document.createElement('div');
+                container.className = 'polaroid-container';
+                container.id = `container-${item.id}`;
+
+                container.innerHTML = `
+                    <div class="polaroid-card" id="card-${item.id}">
+                        <div class="polaroid-front" style="background: ${item.color};">
+                            <!-- Seletor de cores -->
+                            <div class="color-picker-bar">
+                                <div class="color-dot" style="background: #ffffff;" onclick="changeColor(${item.id}, '#ffffff')" title="Branco"></div>
+                                <div class="color-dot" style="background: #ffecf1;" onclick="changeColor(${item.id}, '#ffecf1')" title="Rosa Claro"></div>
+                                <div class="color-dot" style="background: #fff9e6;" onclick="changeColor(${item.id}, '#fff9e6')" title="Amarelo Fofo"></div>
+                                <div class="color-dot" style="background: #eafaf1;" onclick="changeColor(${item.id}, '#eafaf1')" title="Verde Pastilha"></div>
+                                <div class="color-dot" style="background: #f4ecf7;" onclick="changeColor(${item.id}, '#f4ecf7')" title="Lavanda"></div>
+                            </div>
+
+                            <div class="photo-frame" onclick="triggerCamera(${item.id})">
+                                <img id="img-${item.id}" src="${item.img}" alt="Foto">
+                                <div class="camera-icon-overlay">📷 Tirar Foto</div>
+                            </div>
+                            <input type="text" class="caption-input" placeholder="Escreva uma legenda..." value="${item.caption}" oninput="updateData(${item.id}, 'caption', this.value)">
+                            <div class="actions">
+                                <button class="delete-btn" onclick="removePolaroid(${item.id})">Excluir</button>
+                                <button class="action-btn" onclick="flipCard(${item.id})">Ver Verso ➔</button>
+                            </div>
+                        </div>
+                        <div class="polaroid-back" style="background: ${item.color};">
+                            <textarea class="back-text" placeholder="Escreva uma mensagem romântica no verso..." oninput="updateData(${item.id}, 'backText', this.value)">${item.backText}</textarea>
+                            <button class="action-btn" onclick="flipCard(${item.id})" style="margin-top: 15px;">⬅️ Voltar</button>
+                        </div>
+                    </div>
+                    <input type="file" id="file-${item.id}" class="file-input" accept="image/*" capture="environment" onchange="handleImage(event, ${item.id})">
+                `;
+                board.appendChild(container);
+            });
+        }
+
+        function addNewPolaroid() {
+            const newItem = {
+                id: Date.now(),
+                color: '#ffffff',
+                img: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=500&q=80',
+                caption: '',
+                backText: ''
+            };
+            polaroids.unshift(newItem);
+            saveToStorage();
+            renderBoard();
+        }
+
+        function changeColor(id, color) {
+            const item = polaroids.find(p => p.id === id);
+            if (item) {
+                item.color = color;
+                saveToStorage();
+                renderBoard();
+            }
+        }
+
+        function updateData(id, field, value) {
+            const item = polaroids.find(p => p.id === id);
+            if (item) {
+                item[field] = value;
+                saveToStorage();
+            }
+        }
+
+        function triggerCamera(id) {
+            document.getElementById(`file-${id}`).click();
+        }
+
+        function handleImage(event, id) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const item = polaroids.find(p => p.id === id);
+                    if (item) {
+                        item.img = e.target.result;
+                        saveToStorage();
+                        renderBoard();
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function flipCard(id) {
+            const card = document.getElementById(`card-${id}`);
+            card.classList.toggle('flipped');
+        }
+
+        function removePolaroid(id) {
+            polaroids = polaroids.filter(p => p.id !== id);
+            saveToStorage();
+            renderBoard();
+        }
+
+        // Inicializar o mural ao abrir
+        renderBoard();
+    </script>
+
+</body>
+</html>
